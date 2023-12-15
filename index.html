@@ -11,44 +11,44 @@
 <body class="font-sans text-black">
   <div class="bg-black h-screen">
     <!-- Title -->
-    <div class="col bg-blue-500 w-2/3 m-auto rounded-xl border-2 border-gray-600">
+    <div class="col bg-gray-900 w-2/3 m-auto rounded-xl border-2 border-gray-600">
         <br/>
-    <h1 class="text-center text-4xl font-bold">Bear About Town</h1>
+    <h1 class="text-center text-4xl font-bold text-gray-200">Bear About Town</h1>
     <br/>
     </div>
-    <div id="gamescreen" class="bg-blue-400 w-2/3 h-1/2 rounded-xl border-2 border-gray-600 m-auto text-center shadow-2xl">
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <div id="speechBox" class="bg-blue-300 w-full rounded-xl border-2 border-gray-200 mx-auto px-8 text-left text-xl shadow-2xl">
+    <div id="gamescreen" class="bg-gray-600 w-2/3 h-1/2 rounded-xl border-2 border-gray-600 m-auto text-center shadow-2xl">
+      <div class="w-full relative bg-blue-300 w-2/3 rounded-xl border-2 border-gray-200 mx-auto px-8 py-0 my-2 text-left text-xl shadow-2xl">
         <div class="flex flex-row">
-        <img id="characterAvi" class="w-1/4">
-        <div class ="flex flex-col">
-          <p id="actionResultArea">action results</p>
-          <p id="roomInfo" class="py-4"></p>
-          <p id="speechArea" class="py-4">speech</p>
-          <p id="itemArea" class="py-4">items</p>
+          <img id="characterAvi" class="max-w-40 max-h-40 aspect-square border-4 rounded-xl my-2">
+          <div id="replyBox" class="mx-10 my-5">...</div>
         </div>
-        </div>
-      <br/>
       </div>
+      <div id="speechBox" class="overflow-auto bg-blue-300 w-full max-h-300 rounded-xl border-2 border-gray-200 mx-auto px-8 my-2 text-left text-xl shadow-2xl">
+        <div class ="flex flex-col">
+          <p id="speechArea" class="py-2"></p>
+          <p id="roomInfo" class="py-2"></p>
+          <p id="actionResultArea">action results</p>
+          <p id="itemArea" class="py-2"></p>
+        </div>
+        </div>
+      </div>
+
       <!-- currently the info is placed in the first one. can we separate it between containers? -->
       <!-- Player Input Box -->
-     
-      </div>
-      <div id="bottomsection" class="col bg-gray-800 w-full mt-5 rounded-xl border-2 border-gray-600 text-2xl text-blue-300 ">
+      <div id="bottomsection" class="col bg-gray-800 w-full mt-5 rounded-l border-4 border-gray-600 text-2xl text-blue-300">
         <br/>
-        <div id=inputdiv class="text-center">
-          <input type="text" id="playerInput" class="border-2 bg-gray-400 font-bold text-gray-800 font-bold text-xl py-2 px-4 rounded-xl"/>
-        </div>
-      <div id="bottomtextareas" class="flex flex-row gap-10 text-justify py-5 px-10">
-      <div id="inventoryArea" class="text-2xl w-1/2">inventory</div>
-      <p id="actionOptions" class="text-2xl w-1/2">actions</p>
+
+      <div id="bottomtextareas" class="flex flex-row gap-20 text-justify py-2 px-10">
+      <div id="inventoryArea" class="text-xl w-1/2 bg-gray-700 px-10 rounded-xl border-2 border-gray-500"></div>
+      <div id=inputdiv class="text-center">
+        <input type="text" id="playerInput" class="border-2 bg-gray-400 font-bold text-gray-800 font-bold text-xl py-2 px-4 rounded-xl placeholder-black placeholder-opacity-50 text-center" placeholder="Type action words here"/>
+      </div>
+      <p id="actionOptions" class="text-xl w-1/2">actions</p>
       </div>
       <br/>
       </div>
+      </div>
+
     </div>
   </body>
   <script src="GameFull.js"></script>

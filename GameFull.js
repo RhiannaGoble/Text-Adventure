@@ -43,7 +43,7 @@ class Character {
       return `You meet ${this._name}, ${this._description}`;
     }
     speech(){
-      return `${this._name} says "${this._speech}"`;
+      return `${this._name}: "${this._speech}"`;
     }
     poeSpeak() {
       return `${this._name} does not respond`;
@@ -57,7 +57,7 @@ class Character {
     isEnemy() {
       return false;
     }
-    interact() {
+    growl() {
       return this.speech();
     }
     kill() {
@@ -75,34 +75,54 @@ class Friend extends Character {
   }
 
   poeSpeak() {
+    if (this.name === 'Billy'){
+      return `Poe squawks "meat please" in a convincingly human voice. <p> ${this._name} says "${this._poeSpeech}"`
+    }
+    if (this.name === 'Chihuahua'){
+      return `"${this._poeSpeech}"`
+    }
     return `${this._name} says "${this._poeSpeech}"`;
   }
 
+
+
   assist() {
-    return `${this.name} does their best to help you! :D`;
+    // Change poe helping with human here
+    return `${this.name} can't see anything of interest right now`;
   }
 }
 
 class Enemy extends Character {
-  constructor(name, description, pronoun, speech, weakness) {
+  constructor(name, description, pronoun, speech, weakness, image, poeSpeech) {
     super(name, description, pronoun, speech)
     this._weakness = weakness
+    this._image = image
+    this._poeSpeech = poeSpeech
   }
   get weakness() {
     return this._weakness;
   }
-  fight() {
-    return `You fight the ${this.name}! AND WIN!`
+  get image() {
+    return this._image;
   }
-  isEnemy() {
-    return true;
-  }
-  interact(bear) {
+
+  fight(bear) {
+    if (this.name === 'Moose' && bear.itemIsInInventory({name: 'trash'})) {
+      return `You fight the ${this.name}! AND WIN!`
+    }
+    // if (this.name === 'Chihuahua')
+    console.log(this.name);
     if (this.name === 'Chihuahua') {
       bear.kill();
       return `This tiny ball of fluff seems to be made of KNIVES!`;
     }
-    return `No, ${this.name} is ANGY!`
+    return `something about fighting a ${this.name}.`;
+  }
+  isEnemy() {
+    return true;
+  }
+  growl(bear) {
+    return `You approach the ${this.name} and quickly realise the animal is far more unhinged than you. On a physical level, you could probably win this battle. But the emotional scars would last a lifetime.`
   }
 }
 
@@ -150,14 +170,14 @@ class Room {
     }
 
     describeRoomInfo() {
-      let roomDescription = `You are in the ${this._name}, you can see ${this._description}`;
+      let roomDescription = `You are in the ${this._name}. ${this._description}`;
       return roomDescription;
     }
 
-    describeSpeech(){
+    describeChar(){
       let occupantMsg = ""
       if (this.character === "") {
-        occupantMsg = "..."
+        occupantMsg = ""
         // default speech box
       } else {
         occupantMsg = this.character.describe()
@@ -170,7 +190,7 @@ class Room {
       if (this.item === "") {
         itemMsg = ""
       } else {
-        itemMsg = `You found a ${this.item.describe()}`
+        itemMsg = `${this.item.describe()}`
       }
       return itemMsg;
     }
@@ -190,14 +210,18 @@ class Room {
         if (this.character.isEnemy()) {
           details.push(`You can <span class="text-white">fight</span> ${this.character.name}`)
         }
-        details.push(`You can <span class="text-white">interact</span> with ${this.character.name}`)
+        details.push(`You can <span class="text-white">growl</span> at ${this.character.name}`)
       }
       if (this.item !== "") {
-        details.push(`You can <span class="text-white">take</span> the ${this.item.name}`)
+        details.push(`You can <span class="text-white">take</span> ${this.item.name}`)
       }
       if (bear.itemIsInInventory(assistant)) {
         details.push(`You can ask ${assistant.name} to <span class="text-white">assist</span>`);
       }
+      const itemCommands = bear.inventory
+        .filter(item => item.name !== assistant.name)
+        .map((inventoryItem) => `You can <span class="text-white">use ${inventoryItem.name}</span>`);
+      details = details.concat(itemCommands);
       return details;
     }
 
@@ -210,6 +234,7 @@ class Room {
     }
 
     getCharacterAvi() {
+      console.log(this._character)
       let aviURL = ""
       if (this._character === "") {
         aviURL = ""
@@ -243,7 +268,7 @@ class Room {
     }
   
     describe() {
-      return `${this._name} It is ${this._description}`
+      return `${this._name}: ${this._description}`
     }
 
     use() {
@@ -260,19 +285,19 @@ You can go south to EDGE OF TOWN
 */
   // ...................................OBJECTS: ROOMS.......................................
 const cave = new Room("cave")
-cave.description = "the cosy nook which you call home"
+cave.description = "<p>the cosy nook which you call home"
 const forest = new Room("forest")
-forest.description = "trees trees trees trees trees trees trees trees trees trees trees trees trees trees trees "
+forest.description = "<p>It is sunset, and the way back to your cave has been blocked by an aggressive moose. <p> Maybe if you had more energy, you would have a better chance at fighting. <p>Your stomach emits a rumble."
 const edgeOfTown = new Room("edge of town")
-edgeOfTown.description = "the smell of meat wafts over from the Butcher's shop. Ahead of you lies a deserted street lined with human dwellings."
+edgeOfTown.description = "<p>The smell of meat wafts over from the butcher's shop.<p> Ahead of you lies a deserted street lined with human dwellings."
 const butchersShop = new Room("butcher\'s shop")
 butchersShop.description = ""
 const street = new Room ("street")
-street.description = ""
+street.description = "<p> You detect the smell of a barbecue happening somewhere nearby. The street is otherwise quiet."
 const house = new Room ("house")
-house.description = ""
+house.description = "<p>"
 const garden = new Room ("garden")
-garden.description = ""
+garden.description = "<p>"
 
 cave.linkRoom("south", forest);
 forest.linkRoom("north", cave);
@@ -290,19 +315,19 @@ garden.linkRoom("east", house);
 // ...................................OBJECTS: CHARACTERS.......................................
 // Characters: Bear, Poe, Moose, Billy The Blind Butcher, Chihuahua, Humans
 // Player character: Bear
-const Bear = new Character("Bear", "a slightly nervous creature with a rumbling tummy", "he", "hungry bear noises", "", [])
+const Bear = new Character("Bear", "a slightly nervous creature with a rumbling tummy", "he", "hungry bear noises", "https://www.dropbox.com/scl/fi/14zcqsv380b8l0di9gwab/bear.jpg?rlkey=w69o9hdsbjpkil2akcfseog20&dl=0", [])
 
 // Friends
-const Poe = new Friend("Poe", "your friend, a highly intelligent raven", "she", "Quoth the raven, let's go and get some dinner", "https://t3.ftcdn.net/jpg/03/73/55/32/360_F_373553252_Gq05lrTlz5JElCw9qwIYQWt93JOg7S1D.jpg")
-const Billy = new Friend("Billy", "A blind butcher, who is extremely fond of dogs.", "he", "Hello doggy! I'm afraid we're all out of meat this evening. But how about a bone for you, good boy?", "", "Sorry, we are closed for the day.")
-// Bear receives the item "bone" after this interaction
-// extra idea: status effect, or skill/attribute "good boy" attained after this interaction
+const Poe = new Friend("Poe", "a highly intelligent raven", "she", "Quoth the raven, let's go and find dinner!", "https://dl.dropboxusercontent.com/scl/fi/6of32rrk5o5zc9xzlwknt/pixelraven.webp?rlkey=pfheyec0oyw6qgk29od7k0ll4&dl=0")
+const Billy = new Friend("Billy", "an elderly butcher. You can see that the man is blind.", "he", "Oh, what a lovely soft dog! I'm afraid we're all out of meat this evening. But how about a bone for you, good boy? <p>He holds out a bone.", "https://dl.dropboxusercontent.com/scl/fi/d67b2sd9g9bu0rd2dcjbj/billy.png?rlkey=w66nlec2bjskkckq8qrpl5qf3&dl=0", "Sorry, I'm closed for the day.")
+// Bear receives the item "bone" after this growlion
+// extra idea: status effect, or skill/attribute "good boy" attained after this growlion
 
 // Enemies
 // const Spooky = new Enemy("Spooky", "a floaty apparition", "they", "woooooOOOOOooooo", "mean comments")
-const Moose = new Enemy("Moose", "Primordial screaming emanates from the moose. You take this as a threat, and duly wish to avoid this animal.", "he", "")
-const Chihuahua = new Enemy("Chihuahua", ".", "she", "", "bone")
-const Human = new Character("Human", ".", "he", "")
+const Moose = new Enemy("Moose", "Primordial screaming emanates from the moose. You take this as a threat, and duly wish to avoid this animal.", "he", "", "", "https://dl.dropboxusercontent.com/scl/fi/6balkonyi7cbw5yavhqfb/moose.jpg?rlkey=flr9cz21ro8jak9ddkdbt14dd&dl=0")
+const Chihuahua = new Enemy("Chihuahua", "<p>Despite its small size, the dog is extremely aggressive.", "she", "", "bone", "https://dl.dropboxusercontent.com/scl/fi/vadd2j6uwghglt1fbjlzs/chihuahua-dog-breed.jpg?rlkey=r69jkfjfqo7op8lnayvy9u7gi&dl=0")
+const Human = new Enemy("Human", "The human is throwing a party.", "she", "AAAAA, A BEAR! QUICK, CALL THE BEAR COPS!", "",  "https://dl.dropboxusercontent.com/scl/fi/vyzo3vr93y5u6y2rxiewa/monika.png?rlkey=3144kjy1ty6e63uvyvh0a8d1r&dl=0", "OMG, A raven and a bear that are friends!! Is anyone filming this??! <p>The humans allow you to root through their garbage whilst they film content.")
 
 cave.linkPersonToRoom(Moose);
 edgeOfTown.linkPersonToRoom(Poe);
@@ -311,9 +336,9 @@ house.linkPersonToRoom(Chihuahua);
 garden.linkPersonToRoom(Human);
 
 // ...................................OBJECTS: ITEMS.......................................
-const bone = new Item("bone", "a tasty treat for any carnivore")
-const trash = new Item("trash", "your favourite meal")
-const poeItem = new Item("Poe", "friend-shaped corvid")
+const bone = new Item("Bone", "a tasty treat for any carnivore")
+const trash = new Item("Trash", "your favourite meal")
+const poeItem = new Item("Poe", "Friend-shaped bird")
 
 butchersShop.linkItemToRoom(bone);
 garden.linkItemToRoom(trash);
@@ -340,9 +365,12 @@ const showActionItems = (currentRoom) => {
     Bear.revive();
     // currentRoom variable will change when move function is initiated after keydown. We need to let this variable exist here, so we can say what we are moving to with move
     document.getElementById("roomInfo").innerHTML =  currentRoom.describeRoomInfo();
-    document.getElementById("speechArea").innerHTML =  currentRoom.describeSpeech();
-    document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
+    document.getElementById("actionResultArea").innerHTML =  currentRoom.describeChar();
+    // document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
     document.getElementById("characterAvi").src = currentRoom.getCharacterAvi();
+    if (currentRoom.getCharacterAvi() === "") {
+      document.getElementById("characterAvi").src = "https://dl.dropboxusercontent.com/scl/fi/14zcqsv380b8l0di9gwab/bear.jpg?rlkey=w69o9hdsbjpkil2akcfseog20&dl=0"
+    }
     document.getElementById("actionResultArea").innerHTML =  "";
     showActionItems(currentRoom);
     showInventoryDescription();
@@ -362,10 +390,22 @@ const showActionItems = (currentRoom) => {
         const directions = ["north", "south", "east", "west"]
 
         if (currentRoom.name === forest.name && command === "north" && !Bear.itemIsInInventory(trash)) {
-          document.getElementById("speechArea").innerHTML =  "YOU DIED. REFRESH PAGE TO TRY AGAIN";
+          document.getElementById("speechArea").innerHTML =  "GAME OVER! <p>You have been killed by a furious moose. Refresh the page to try again.";
           Bear.kill();
           return
         } 
+
+        if (currentRoom.name === house.name && command === "west" && currentRoom.character !== "") {
+          document.getElementById("speechArea").innerHTML =  "GAME OVER! <p>The chihuahua defended its home. Refresh the page to try again.";
+          Bear.kill();
+          return
+        } 
+
+        // if (currentRoom.name === garden.name && !Bear.itemIsInInventory(poeItem))) {
+        //   document.getElementById("speechArea").innerHTML =  "GAME OVER! <p>You go to bear jail for your. Refresh the page to try again.";
+        //   Bear.kill();
+        //   return
+        // } 
 
         if (directions.includes(command.toLowerCase())) {
           currentRoom = currentRoom.move(command)
@@ -374,37 +414,54 @@ const showActionItems = (currentRoom) => {
           // the line above blanks the text box so you don't need to delete your last entry
           document.getElementById("roomInfo").innerHTML =  currentRoom.describeRoomInfo();
           showActionItems(currentRoom);
-          document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
+          // document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
           showInventoryDescription()
           document.getElementById("actionResultArea").innerHTML =  "";
+          document.getElementById("replyBox").innerHTML =  "";
+          document.getElementById("itemArea").innerHTML =  ""
 
           if (Bear.itemIsInInventory(currentRoom.character)) {
             currentRoom.character = ""
           }
 
-          document.getElementById("speechArea").innerHTML =  currentRoom.describeSpeech();
+          document.getElementById("actionResultArea").innerHTML =  currentRoom.describeChar();
           document.getElementById("characterAvi").src = currentRoom.getCharacterAvi();
+          if (currentRoom.getCharacterAvi() === "") {
+            document.getElementById("characterAvi").src = "https://dl.dropboxusercontent.com/scl/fi/14zcqsv380b8l0di9gwab/bear.jpg?rlkey=w69o9hdsbjpkil2akcfseog20&dl=0"
+          }
 
           // roomInfo is the division on the html where this will go
         } else if (command.toLowerCase() === 'fight') {
           if (currentRoom.character !== "") {
-            document.getElementById("actionResultArea").innerHTML = currentRoom.character.fight();
+            document.getElementById("actionResultArea").innerHTML = currentRoom.character.fight(Bear);
           } else {
             document.getElementById("actionResultArea").innerHTML = "You shadow box for a while...";
           }
           document.getElementById("playerInput").value = ""
-        } else if (command.toLowerCase() === 'interact') {
+        } else if (command.toLowerCase() === 'growl') {
           if (currentRoom.character !== "") {
             console.log(currentRoom.character);
-            document.getElementById("actionResultArea").innerHTML = currentRoom.character.interact(Bear);
+            document.getElementById("replyBox").innerHTML = currentRoom.character.growl(Bear);
           } else {
-            document.getElementById("actionResultArea").innerHTML = "There is no one here...";
+            document.getElementById("replyBox").innerHTML = "There is no one here...";
           }
           document.getElementById("playerInput").value = ""
         } else if (command.toLowerCase() === 'take') {
           if (currentRoom.item !== "") {
-            document.getElementById("actionResultArea").innerHTML = `You take the ${currentRoom.item.name}`
+            if (currentRoom.item.name === trash.name && !Bear.itemIsInInventory(poeItem)) {
+              // Change text for loss by human here
+              document.getElementById("speechArea").innerHTML =  "GAME OVER! <p>Having terrified a group of humans, you are taken to bear jail for your crimes.";
+              Bear.kill();
+              return;
+            } else  if (currentRoom.item.name === trash.name) {
+              document.getElementById("speechArea").innerHTML = currentRoom.character.poeSpeech();
+            }
+
+            document.getElementById("itemArea").innerHTML = `You got ${currentRoom.item.name}`
             Bear.inventory.push(currentRoom.item)
+            if (currentRoom.item == poeItem) {
+              document.getElementById("itemArea").innerHTML = `Poe flies gracefully onto your back. You can now ask her for assistance with certain tasks!`
+            }
             console.log(Bear)
             if (currentRoom.character.name === currentRoom.item.name) {
               currentRoom.character = ""
@@ -412,10 +469,13 @@ const showActionItems = (currentRoom) => {
             currentRoom.item = ""
             showActionItems(currentRoom)
             showInventoryDescription()
-            document.getElementById("speechArea").innerHTML =  currentRoom.describeSpeech();
-            document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
+            document.getElementById("actionResultArea").innerHTML =  currentRoom.describeChar();
+            // document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
             document.getElementById("characterAvi").src = currentRoom.getCharacterAvi();
-          } else {
+            if (currentRoom.getCharacterAvi() === "") {
+              document.getElementById("characterAvi").src = "https://dl.dropboxusercontent.com/scl/fi/14zcqsv380b8l0di9gwab/bear.jpg?rlkey=w69o9hdsbjpkil2akcfseog20&dl=0"
+            }} 
+          else {
             document.getElementById("actionResultArea").innerHTML =  `There is nothing here...`
           }
           document.getElementById("playerInput").value = ""
@@ -429,7 +489,7 @@ const showActionItems = (currentRoom) => {
             }
           }
           document.getElementById("playerInput").value = ""
-          document.getElementById("actionResultArea").innerHTML = speech;
+          document.getElementById("itemArea").innerHTML = speech;
         } else if (command.toLowerCase().startsWith('use')) {
           const commandParts = command.split(' ');
           const nameOfItemToUse = commandParts[1];
@@ -439,18 +499,23 @@ const showActionItems = (currentRoom) => {
           } else {
             const itemToUse = itemsThatCouldBeUsed.pop();
             let useText = itemToUse.use();
+            console.log(itemToUse);
             if (currentRoom.character.isEnemy() && currentRoom.character.weakness.toLowerCase() === itemToUse.name.toLowerCase()) {
-              useText += ` and ${currentRoom.character.name} runs either at or away from the ${itemToUse.name}, you are not sure`
+              useText += ` and ${currentRoom.character.name} is distracted chomping away on it.`;
+              console.log(useText);
               currentRoom.character = "";
             }
-            document.getElementById("actionResultArea").innerHTML = useText;
+            document.getElementById("itemArea").innerHTML = useText;
             Bear.inventory = Bear.inventory.filter(item => item.name !== nameOfItemToUse);
           }
           showActionItems(currentRoom)
           showInventoryDescription()
-          document.getElementById("speechArea").innerHTML =  currentRoom.describeSpeech();
-          document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
+          document.getElementById("actionResultArea").innerHTML =  currentRoom.describeChar();
+          // document.getElementById("itemArea").innerHTML =  currentRoom.describeItem();
           document.getElementById("characterAvi").src = currentRoom.getCharacterAvi();
+          if (currentRoom.getCharacterAvi() === "") {
+            document.getElementById("characterAvi").src = "https://dl.dropboxusercontent.com/scl/fi/14zcqsv380b8l0di9gwab/bear.jpg?rlkey=w69o9hdsbjpkil2akcfseog20&dl=0"
+          }
           document.getElementById("playerInput").value = "";
         } else {
           document.getElementById("playerInput").value = ""
