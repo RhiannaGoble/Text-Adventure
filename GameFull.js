@@ -4,7 +4,7 @@
 // // CLASSES
 //.......................................CHARACTERS.......................................
 class Character {
-    constructor(name, description, pronoun, speech, image, inventory, poeSpeech) {
+    constructor(name, description, pronoun, speech, image, inventory) {
         this._name = name
         this._description = description
         this._pronoun = pronoun
