@@ -4,25 +4,54 @@
     <!--required meta--> 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!--Bootstrap css-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <!--Custom css-->
-  </head>
-  <body>
-    <div class="container">
-      <div id="gamearea">
-        <div id="details">
-            <!--content-->
-            <div class="justify-content-center mx-auto text-center">
-              <p id="textarea" class="text-center"></p><br /><br />
-              <input type="text" id="playerInput" />
-            </div>
+    <title>Bear About Town</title>
+    <!-- Link to Tailwind CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans text-black">
+  <div class="bg-black h-screen">
+    <!-- Title -->
+    <div class="col bg-blue-500 w-2/3 m-auto rounded-xl border-2 border-gray-600">
+        <br/>
+    <h1 class="text-center text-4xl font-bold">Bear About Town</h1>
+    <br/>
+    </div>
+    <div id="gamescreen" class="bg-blue-400 w-2/3 h-1/2 rounded-xl border-2 border-gray-600 m-auto text-center shadow-2xl">
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
+      <div id="speechBox" class="bg-blue-300 w-full rounded-xl border-2 border-gray-200 mx-auto px-8 text-left text-xl shadow-2xl">
+        <div class="flex flex-row">
+        <img id="characterAvi" class="w-1/4">
+        <div class ="flex flex-col">
+          <p id="actionResultArea">action results</p>
+          <p id="roomInfo" class="py-4"></p>
+          <p id="speechArea" class="py-4">speech</p>
+          <p id="itemArea" class="py-4">items</p>
         </div>
+        </div>
+      <br/>
+      </div>
+      <!-- currently the info is placed in the first one. can we separate it between containers? -->
+      <!-- Player Input Box -->
+     
+      </div>
+      <div id="bottomsection" class="col bg-gray-800 w-full mt-5 rounded-xl border-2 border-gray-600 text-2xl text-blue-300 ">
+        <br/>
+        <div id=inputdiv class="text-center">
+          <input type="text" id="playerInput" class="border-2 bg-gray-400 font-bold text-gray-800 font-bold text-xl py-2 px-4 rounded-xl"/>
+        </div>
+      <div id="bottomtextareas" class="flex flex-row gap-10 text-justify py-5 px-10">
+      <div id="inventoryArea" class="text-2xl w-1/2">inventory</div>
+      <p id="actionOptions" class="text-2xl w-1/2">actions</p>
+      </div>
+      <br/>
       </div>
     </div>
-    <!-- link to external JavaScript-->
-    <script src="GameFull.js"></script>
   </body>
+  <script src="GameFull.js"></script>
 </html>
 
 <!--- To make it a little prettier: bear avatar -->
